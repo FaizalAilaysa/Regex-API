@@ -8,9 +8,22 @@ import os
 from docx import Document  
 
 class FileUploadView(APIView):
+    """
+    API view to handle file uploads, correct mistakes, and return the corrected content.
+    """
     parser_classes = [MultiPartParser, FormParser]
     
     def post(self, request, *args, **kwargs):
+        
+        """
+        Handle POST request for file upload and process the content.
+
+        Request:
+            request (HttpRequest): The request object containing the uploaded file.
+        Returns:
+            Response: A response object containing the corrected content or errors.
+        """
+        
         file_serializer = UploadFileSerializer(data=request.data)
         
         if file_serializer.is_valid():
@@ -34,6 +47,14 @@ class FileUploadView(APIView):
         
     
     def read_docx_file(self, file_path):
+        """
+        Read content from a DOCX file.
+        
+        file_path (str): The path to the DOCX file.
+
+        Returns:
+            str: The content of the DOCX file as a string.
+        """
         doc = Document(file_path)
         full_text = []
         for para in doc.paragraphs:
@@ -41,6 +62,14 @@ class FileUploadView(APIView):
         return ''.join(full_text)
     
     def correct_mistakes(self, content):
+        """
+        Correct mistakes in the given content using regex patterns.
+
+        content (str): The original content to be corrected.
+
+        Returns:
+            str: The corrected content.
+        """
         
         corrections = [
             (r'\s*,', r','),  # Remove spaces before commas
